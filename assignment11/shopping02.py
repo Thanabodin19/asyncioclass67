@@ -12,7 +12,6 @@ class Product:
         self.product_name = product_name
         self.checkout_time = checkout_time
 
-
 class Customer:
     def __init__(self, customer_id: int, products: list[Product]):
         self.customer_id = customer_id
