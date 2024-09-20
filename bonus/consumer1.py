@@ -1,6 +1,19 @@
 # https://aiokafka.readthedocs.io/en/stable/
 from aiokafka import AIOKafkaConsumer
+from aiokafka.admin import AIOKafkaAdminClient, NewTopic
 import asyncio
+
+async def new_topic():
+    admin = AIOKafkaAdminClient(bootstrap_servers='localhost:9092')
+    await admin.start()
+    try:
+       ex_topic = await admin.list_topics()
+       if 'my_topic' not in ex_topic:
+           topic = NewTopic(name='my_topic', num_partitions=3, replication_factor=3)
+           await admin.create_topics([topic])
+           print(f"create topic with partition = {3} replication = {3} ")
+    finally:
+        await admin.close()
 
 async def consume():
     consumer = AIOKafkaConsumer(
@@ -18,4 +31,8 @@ async def consume():
         # Will leave consumer group; perform autocommit if enabled.
         await consumer.stop()
 
-asyncio.run(consume())
+async def main():
+    await new_topic()
+    await consume()
+        
+asyncio.run(main())
